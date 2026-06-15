@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Dubai Lock Savings</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #F7F8FA;
+      color: #111827;
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #E4E7EC;
+      padding: 18px 22px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .brand-dots { display: flex; gap: 3px; }
+    .brand-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+    .brand-label {
+      color: #9CA3AF;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+    .header-greeting {
+      font-size: 19px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: #F2F4F7;
+      border: 1px solid #E4E7EC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #111827;
+      flex-shrink: 0;
+    }
+
+    /* ── Main content ── */
+    .content {
+      padding: 0 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ── Overview strip ── */
+    .overview {
+      background: #fff;
+      border: 1px solid #E4E7EC;
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .overview-cell {
+      text-align: center;
+      padding: 0 4px;
+    }
+    .overview-cell:not(:last-child) {
+      border-right: 1px solid #E4E7EC;
+    }
+    .overview-value {
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.3;
+      display: inline-block;
+    }
+    .overview-value.lg { font-size: 15px; }
+    .overview-value.sm { font-size: 12px; }
+    .overview-value.accent-green { border-bottom: 2px solid #009A44; padding-bottom: 1px; }
+    .overview-value.accent-red   { border-bottom: 2px solid #EF3340; padding-bottom: 1px; }
+    .overview-label {
+      color: #9CA3AF;
+      font-size: 9px;
+      margin-top: 5px;
+      letter-spacing: 0.6px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-section { margin-bottom: 22px; }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      font-size: 12px;
+    }
+    .progress-track {
+      background: #F2F4F7;
+      border-radius: 99px;
+      height: 7px;
+      overflow: hidden;
+      border: 1px solid #E4E7EC;
+      display: flex;
+    }
+    .progress-green { background: #009A44; opacity: 0.6; transition: width 0.5s; }
+    .progress-red   { background: #EF3340; opacity: 0.5; transition: width 0.5s; }
+
+    /* ── Section title ── */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .section-title { font-size: 15px; font-weight: 700; color: #111827; }
+    .btn-new-goal {
+      background: #009A44;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 7px 15px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      opacity: 0.88;
+      font-family: inherit;
+    }
+    .btn-new-goal:hover { opacity: 1; }
+
+    /* ── Goal card ── */
+    .goal-card {
+      background: #fff;
+      border: 1px solid #E4E7EC;
+      border-radius: 14px;
+      padding: 16px 18px 16px 22px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: border-color 0.18s, box-shadow 0.18s;
+      margin-bottom: 10px;
+    }
+    .goal-card.active {
+      border-color: rgba(0,154,68,0.33);
+      box-shadow: 0 2px 12px rgba(0,154,68,0.09);
+    }
+    .goal-card-bar {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 14px 0 0 14px;
+      opacity: 0.75;
+    }
+    .goal-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .goal-icon { font-size: 22px; }
+    .goal-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .goal-meta { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+    .goal-prog-track {
+      background: #F2F4F7;
+      border-radius: 99px;
+      height: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid #E4E7EC;
+    }
+    .goal-prog-fill {
+      height: 100%;
+      border-radius: 99px;
+      opacity: 0.7;
+      transition: width 0.5s ease;
+    }
+    .goal-amounts {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .goal-saved { font-weight: 600; color: #111827; }
+    .goal-pct   { color: #9CA3AF; }
+    .goal-met-badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: #ECFDF5;
+      color: #009A44;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid #A7F3D0;
+    }
+
+    /* ── Detail panel ── */
+    .detail-panel {
+      background: #fff;
+      border: 1px solid #E4E7EC;
+      border-radius: 16px;
+      padding: 22px 20px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      margin-top: 16px;
+      margin-bottom: 10px;
+    }
+    .detail-flag-stripe {
+      display: flex;
+      height: 3px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+    .btn-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: #F2F4F7;
+      border: 1px solid #E4E7EC;
+      color: #9CA3AF;
+      font-size: 16px;
+      cursor: pointer;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+    }
+    .detail-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .detail-icon { font-size: 30px; }
+    .detail-name { font-weight: 700; font-size: 15px; color: #111827; }
+    .detail-rate { font-size: 12px; color: #6B7280; margin-top: 2px; }
+
+    .stats-grid {
+      background: #F2F4F7;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      border: 1px solid #E4E7EC;
+    }
+    .stat-label {
+      color: #9CA3AF;
+      font-size: 10px;
+      margin-bottom: 4px;
+      letter-spacing: 0.6px;
+    }
+    .stat-value {
+      font-weight: 700;
+      font-size: 14px;
+      color: #111827;
+    }
+    .stat-value.accent {
+      border-left: 2px solid;
+      padding-left: 7px;
+    }
+
+    .detail-prog-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .detail-prog-track {
+      background: #F2F4F7;
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+      border: 1px solid #E4E7EC;
+      margin-bottom: 16px;
+    }
+    .detail-prog-fill {
+      height: 100%;
+      border-radius: 99px;
+      opacity: 0.65;
+    }
+
+    .topup-suggestion {
+      background: #F2F4F7;
+      border: 1px solid #E4E7EC;
+      border-left: 3px solid #EF3340;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .topup-label { color: #9CA3AF; font-size: 11px; }
+    .topup-amount { color: #111827; font-weight: 700; font-size: 17px; margin-top: 4px; }
+    .topup-amount span { color: #9CA3AF; font-weight: 400; font-size: 13px; }
+    .topup-sub { color: #9CA3AF; font-size: 11px; margin-top: 2px; }
+
+    .detail-actions { display: flex; gap: 10px; }
+    .btn-topup {
+      flex: 1;
+      background: #009A44;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 0;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      opacity: 0.9;
+      font-family: inherit;
+    }
+    .btn-topup:hover { opacity: 1; }
+    .btn-withdraw {
+      flex: 1;
+      background: #F2F4F7;
+      color: #6B7280;
+      border: 1px solid #E4E7EC;
+      border-radius: 10px;
+      padding: 12px 0;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-withdraw:hover { background: #E4E7EC; }
+
+    /* ── Lock notice ── */
+    .lock-notice {
+      margin-top: 22px;
+      background: #fff;
+      border: 1px solid #E4E7EC;
+      border-left: 3px solid #EF3340;
+      border-radius: 10px;
+      padding: 13px 15px;
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .lock-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .lock-title { font-weight: 600; font-size: 13px; color: #111827; }
+    .lock-body  { font-size: 12px; color: #6B7280; margin-top: 3px; line-height: 1.5; }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      border-top: 1px solid #E4E7EC;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 8px 22px;
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-family: inherit;
+    }
+    .nav-label {
+      font-size: 10px;
+      letter-spacing: 0.3px;
+    }
+    .nav-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #009A44;
+      opacity: 0.7;
+    }
+
+    /* ── Quick Actions ── */
+    .quick-action {
+      background: #fff;
+      border: 1px solid #E4E7EC;
+      border-radius: 12px;
+      padding: 12px 6px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: box-shadow 0.15s;
+    }
+    .quick-action:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
+    .qa-icon {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: #F2F4F7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quick-action:first-child .qa-icon { background: #ECFDF5; }
+    .qa-label { font-size: 10px; font-weight: 600; color: #6B7280; letter-spacing: 0.2px; text-align: center; }
+
+    /* ── Trend chart ── */
+    .trend-card {
+      background: #fff;
+      border: 1px solid #E4E7EC;
+      border-radius: 14px;
+      padding: 16px 16px 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 4px;
+    }
+
+    /* ── Activity ── */
+    .activity-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+    }
+    .act-icon-wrap {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .act-body { flex: 1; min-width: 0; }
+    .act-title { font-size: 13px; font-weight: 500; color: #111827; }
+    .act-date  { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+    .act-amount { font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .act-amount.green { color: #009A44; }
+
+    /* ── Responsive ── */
+    @media (min-width: 480px) {
+      .header { padding: 20px 28px 18px; }
+      .content { padding: 0 24px; }
+      .overview-value.lg { font-size: 16px; }
+      .overview-value.sm { font-size: 14px; }
+    }
+    @media (min-width: 600px) {
+      body { background: #ECEEF2; }
+      .header { max-width: 600px; margin: 0 auto; border-radius: 0; }
+      .card-wrap {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #F7F8FA;
+        min-height: 100vh;
+      }
+      .bottom-nav {
+        max-width: 600px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card-wrap">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="header-brand">
+        <div class="brand-dots">
+          <div class="brand-dot" style="background:#EF3340;opacity:0.7"></div>
+          <div class="brand-dot" style="background:#009A44;opacity:0.7"></div>
+          <div class="brand-dot" style="background:#1a1a1a;opacity:0.5"></div>
+        </div>
+        <span class="brand-label">DUBAI LOCK SAVINGS</span>
+      </div>
+      <div class="header-greeting">Good morning, Frank</div>
+    </div>
+    <div class="avatar">F</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Overview -->
+    <div class="overview">
+      <div class="overview-cell">
+        <div class="overview-value lg accent-green" id="val-locked">AED 18,173</div>
+        <div class="overview-label">TOTAL LOCKED</div>
+      </div>
+      <div class="overview-cell">
+        <div class="overview-value sm" id="val-target">AED 25,470</div>
+        <div class="overview-label">TOTAL TARGET</div>
+      </div>
+      <div class="overview-cell">
+        <div class="overview-value sm accent-red">AED 943</div>
+        <div class="overview-label">INTEREST EARNED</div>
+      </div>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span style="color:#6B7280">Overall savings progress</span>
+        <span style="font-weight:600" id="overall-pct">71.3%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-green" id="prog-green" style="width:46.4%"></div>
+        <div class="progress-red"   id="prog-red"   style="width:24.9%"></div>
+      </div>
+    </div>
+
+    <!-- Section header -->
+    <div class="section-header">
+      <span class="section-title">My Savings Goals</span>
+      <button class="btn-new-goal">+ New Goal</button>
+    </div>
+
+    <!-- Goal card -->
+    <div class="goal-card" id="goal-card" onclick="toggleDetail()">
+      <div class="goal-card-bar" style="background:#009A44"></div>
+      <div class="goal-card-head">
+        <span class="goal-icon">🏠</span>
+        <div style="flex:1;min-width:0">
+          <div class="goal-name">Family Home — Palm Jumeirah</div>
+          <div class="goal-meta">Locked until Mar 2027 · 5.2% p.a.</div>
+        </div>
+      </div>
+      <div class="goal-prog-track">
+        <div class="goal-prog-fill" style="width:71.3%;background:#009A44"></div>
+      </div>
+      <div class="goal-amounts">
+        <span class="goal-saved">AED 18,173</span>
+        <span class="goal-pct">71% of AED 25,470</span>
+      </div>
+    </div>
+
+    <!-- Detail panel (hidden by default) -->
+    <div class="detail-panel" id="detail-panel" style="display:none">
+      <div class="detail-flag-stripe">
+        <div style="flex:1;background:#EF3340"></div>
+        <div style="flex:1;background:#009A44"></div>
+        <div style="flex:1;background:#1a1a1a"></div>
+      </div>
+      <button class="btn-close" onclick="toggleDetail()">×</button>
+
+      <div class="detail-head">
+        <span class="detail-icon">🏠</span>
+        <div>
+          <div class="detail-name">Family Home — Palm Jumeirah</div>
+          <div class="detail-rate">5.2% Annual Return</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div>
+          <div class="stat-label">SAVED</div>
+          <div class="stat-value accent" style="border-color:#009A44">AED 18,173</div>
+        </div>
+        <div>
+          <div class="stat-label">TARGET</div>
+          <div class="stat-value">AED 25,470</div>
+        </div>
+        <div>
+          <div class="stat-label">REMAINING</div>
+          <div class="stat-value accent" style="border-color:#EF3340">AED 7,297</div>
+        </div>
+        <div>
+          <div class="stat-label">LOCK DATE</div>
+          <div class="stat-value" style="color:#6B7280">Mar 2027</div>
+        </div>
+      </div>
+
+      <div class="detail-prog-header">
+        <span style="color:#6B7280">Progress toward goal</span>
+        <span style="font-weight:700">71.3%</span>
+      </div>
+      <div class="detail-prog-track">
+        <div class="detail-prog-fill" style="width:71.3%;background:#009A44"></div>
+      </div>
+
+      <div class="topup-suggestion">
+        <div class="topup-label">Suggested monthly top-up</div>
+        <div class="topup-amount">AED 912 <span>/ month</span></div>
+        <div class="topup-sub">to reach your goal on time</div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn-topup">Top Up</button>
+        <button class="btn-withdraw">Withdraw</button>
+      </div>
+    </div>
+
+    <!-- Lock notice -->
+    <div class="lock-notice">
+      <span class="lock-icon">🔒</span>
+      <div>
+        <div class="lock-title">Lock Protection Active</div>
+        <div class="lock-body">Locked funds cannot be withdrawn before maturity. Early exit incurs a 25% penalty fee as per UAE Central Bank guidelines.</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-header" style="margin-top:24px">
+      <span class="section-title">Quick Actions</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:24px">
+      <div class="quick-action">
+        <div class="qa-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </div>
+        <span class="qa-label">Top Up</span>
+      </div>
+      <div class="quick-action">
+        <div class="qa-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+          </svg>
+        </div>
+        <span class="qa-label">Withdraw</span>
+      </div>
+      <div class="quick-action">
+        <div class="qa-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><line x1="12" y1="12" x2="12" y2="16"/>
+          </svg>
+        </div>
+        <span class="qa-label">Lock More</span>
+      </div>
+      <div class="quick-action">
+        <div class="qa-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
+          </svg>
+        </div>
+        <span class="qa-label">History</span>
+      </div>
+    </div>
+
+    <!-- Monthly Trend -->
+    <div class="section-header">
+      <span class="section-title">Monthly Savings</span>
+      <span style="font-size:11px;color:#9CA3AF">Last 6 months</span>
+    </div>
+    <div class="trend-card">
+      <canvas id="trendChart" height="90"></canvas>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-header" style="margin-top:22px">
+      <span class="section-title">Recent Activity</span>
+      <span style="font-size:11px;color:#009A44;font-weight:600;cursor:pointer">See all</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;background:#fff;border:1px solid #E4E7EC;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);margin-bottom:8px">
+      <div class="activity-row">
+        <div class="act-icon-wrap" style="background:#ECFDF5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="act-body">
+          <div class="act-title">Top-up deposited</div>
+          <div class="act-date">Today, 09:14 AM</div>
+        </div>
+        <div class="act-amount green">+AED 500</div>
+      </div>
+      <div class="activity-row" style="border-top:1px solid #F2F4F7">
+        <div class="act-icon-wrap" style="background:#FFF7ED">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="act-body">
+          <div class="act-title">Interest credited</div>
+          <div class="act-date">Jun 1, 2026</div>
+        </div>
+        <div class="act-amount" style="color:#F97316">+AED 78</div>
+      </div>
+      <div class="activity-row" style="border-top:1px solid #F2F4F7">
+        <div class="act-icon-wrap" style="background:#ECFDF5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="act-body">
+          <div class="act-title">Top-up deposited</div>
+          <div class="act-date">May 28, 2026</div>
+        </div>
+        <div class="act-amount green">+AED 1,200</div>
+      </div>
+      <div class="activity-row" style="border-top:1px solid #F2F4F7">
+        <div class="act-icon-wrap" style="background:#FEF2F2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF3340" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="act-body">
+          <div class="act-title">Penalty fee waiver applied</div>
+          <div class="act-date">May 15, 2026</div>
+        </div>
+        <div class="act-amount" style="color:#EF3340">−AED 0</div>
+      </div>
+      <div class="activity-row" style="border-top:1px solid #F2F4F7">
+        <div class="act-icon-wrap" style="background:#ECFDF5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="act-body">
+          <div class="act-title">Top-up deposited</div>
+          <div class="act-date">May 3, 2026</div>
+        </div>
+        <div class="act-amount green">+AED 2,000</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /card-wrap -->
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottom-nav">
+  <!-- Home -->
+  <button class="nav-btn" onclick="setTab('home')" id="tab-home">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+      <path d="M9 21V12h6v9"/>
+    </svg>
+    <span class="nav-label" style="color:#009A44;font-weight:600">Home</span>
+    <div class="nav-dot"></div>
+  </button>
+
+  <!-- Goals -->
+  <button class="nav-btn" onclick="setTab('goals')" id="tab-goals">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/>
+      <circle cx="12" cy="12" r="5"/>
+      <circle cx="12" cy="12" r="1" fill="#9CA3AF" stroke="none"/>
+      <line x1="12" y1="3" x2="12" y2="5"/>
+      <line x1="12" y1="19" x2="12" y2="21"/>
+      <line x1="3" y1="12" x2="5" y2="12"/>
+      <line x1="19" y1="12" x2="21" y2="12"/>
+    </svg>
+    <span class="nav-label" style="color:#9CA3AF">Goals</span>
+  </button>
+
+  <!-- Transfer -->
+  <button class="nav-btn" onclick="setTab('transfer')" id="tab-transfer">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 16V4m0 0L3 8m4-4 4 4"/>
+      <path d="M17 8v12m0 0 4-4m-4 4-4-4"/>
+    </svg>
+    <span class="nav-label" style="color:#9CA3AF">Transfer</span>
+  </button>
+
+  <!-- Analytics -->
+  <button class="nav-btn" onclick="setTab('analytics')" id="tab-analytics">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="12" width="4" height="9" rx="1"/>
+      <rect x="10" y="7" width="4" height="14" rx="1"/>
+      <rect x="17" y="3" width="4" height="18" rx="1"/>
+    </svg>
+    <span class="nav-label" style="color:#9CA3AF">Analytics</span>
+  </button>
+
+  <!-- Profile -->
+  <button class="nav-btn" onclick="setTab('profile')" id="tab-profile">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="7" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+    <span class="nav-label" style="color:#9CA3AF">Profile</span>
+  </button>
+</nav>
+
+<script>
+  let activeTab = 'home';
+  let detailOpen = false;
+
+  function setTab(tab) {
+    const prev = document.getElementById('tab-' + activeTab);
+    const next = document.getElementById('tab-' + tab);
+    const GREEN = '#009A44', MUTED = '#9CA3AF';
+
+    // Reset previous tab
+    prev.querySelectorAll('svg').forEach(s => s.setAttribute('stroke', MUTED));
+    prev.querySelectorAll('circle[fill]').forEach(c => c.setAttribute('fill', MUTED));
+    prev.querySelector('.nav-label').style.color = MUTED;
+    prev.querySelector('.nav-label').style.fontWeight = '400';
+    const prevDot = prev.querySelector('.nav-dot');
+    if (prevDot) prevDot.remove();
+
+    // Activate new tab
+    next.querySelectorAll('svg').forEach(s => s.setAttribute('stroke', GREEN));
+    next.querySelectorAll('circle[fill]').forEach(c => c.setAttribute('fill', GREEN));
+    next.querySelector('.nav-label').style.color = GREEN;
+    next.querySelector('.nav-label').style.fontWeight = '600';
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    next.appendChild(dot);
+
+    activeTab = tab;
+  }
+
+  function toggleDetail() {
+    const card = document.getElementById('goal-card');
+    const panel = document.getElementById('detail-panel');
+    detailOpen = !detailOpen;
+    panel.style.display = detailOpen ? 'block' : 'none';
+    card.classList.toggle('active', detailOpen);
+    if (detailOpen) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+<script>
+  // Draw mini savings trend chart
+  window.addEventListener('load', function() {
+    const canvas = document.getElementById('trendChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+
+    const data   = [10200, 12400, 13800, 15100, 16800, 18173];
+    const labels = ['Jan','Feb','Mar','Apr','May','Jun'];
+    const W = canvas.width, H = canvas.height;
+    const pad = { top: 10, right: 12, bottom: 24, left: 46 };
+    const cW = W - pad.left - pad.right;
+    const cH = H - pad.top - pad.bottom;
+    const min = 9000, max = 20000;
+
+    function xOf(i) { return pad.left + (i / (data.length - 1)) * cW; }
+    function yOf(v) { return pad.top + (1 - (v - min) / (max - min)) * cH; }
+
+    // Grid lines
+    ctx.strokeStyle = '#E4E7EC';
+    ctx.lineWidth = 1;
+    [10000, 14000, 18000].forEach(v => {
+      const y = yOf(v);
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      ctx.fillStyle = '#9CA3AF'; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('AED ' + (v/1000).toFixed(0) + 'k', pad.left - 4, y + 3);
+    });
+
+    // Area fill
+    const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+    grad.addColorStop(0, 'rgba(0,154,68,0.12)');
+    grad.addColorStop(1, 'rgba(0,154,68,0)');
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(data[0]));
+    data.forEach((v, i) => { if(i>0) ctx.lineTo(xOf(i), yOf(v)); });
+    ctx.lineTo(xOf(data.length-1), pad.top + cH);
+    ctx.lineTo(xOf(0), pad.top + cH);
+    ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(data[0]));
+    data.forEach((v, i) => { if(i>0) ctx.lineTo(xOf(i), yOf(v)); });
+    ctx.strokeStyle = '#009A44'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // Dots + labels
+    data.forEach((v, i) => {
+      const x = xOf(i), y = yOf(v);
+      ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.strokeStyle = '#009A44'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#9CA3AF'; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(labels[i], x, H - 4);
+    });
+
+    // Last point highlight
+    const lx = xOf(data.length-1), ly = yOf(data[data.length-1]);
+    ctx.beginPath(); ctx.arc(lx, ly, 5, 0, Math.PI*2);
+    ctx.fillStyle = '#009A44'; ctx.fill();
+  });
+</script>
+
+</body>
+</html>
