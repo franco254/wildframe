@@ -1004,106 +1004,45 @@ a { color: inherit; text-decoration: none; }
     <a href="contact.html">Contact</a>
   </div>
 
-  <header class="post-hero">
-    <div class="post-hero-img"></div>
+  <header class="post-hero" id="postHero">
+    <div class="post-hero-img" id="postHeroImg"></div>
     <div class="post-hero-overlay"></div>
     <div class="post-hero-content">
-      <p class="post-tag" style="margin-bottom:var(--s2); font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold)">Wildlife</p>
-      <h1>Tracking Wolves in Białowieża</h1>
-      <div class="post-hero-meta">
-        <span>January 2026</span>
-        &nbsp;·&nbsp; 8 min read
-        &nbsp;·&nbsp; Poland
-      </div>
+      <p class="post-tag" id="postCategory" style="margin-bottom:var(--s2); font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold)"></p>
+      <h1 id="postTitle"></h1>
+      <div class="post-hero-meta" id="postMeta"></div>
     </div>
   </header>
 
   <div class="post-layout">
-    <article class="post-body reveal">
-      <p>I arrived in Białowieża in the dark, four hours before sunrise. The forest in winter has a quality of silence that feels earned — not the absence of sound, but the presence of something older than sound. Snow had fallen the previous night, and the tracks I found on the forest path at dawn were still crisp: a large male, moving north.</p>
-
-      <blockquote>The quality of waiting that nature photography demands is a different species from impatience. You are not waiting for something to arrive. You are learning to be in a place without needing it to perform.</blockquote>
-
-      <p>I spent the first day learning the territory. A fixed hide had been placed near a clearing where the gamekeeper had seen a pack the previous week. I sat in it for nine hours. I saw a woodpecker, three deer, and a man on a bicycle who waved. No wolves.</p>
-
-      <h2>The second day</h2>
-
-      <p>It is easy to misunderstand what wildlife photography requires. The technical side — exposure, focus, lens choice — is learnable in an afternoon. What is not learnable is the willingness to be cold, to be patient, to let a day go by with nothing but the gathering dark to show for it.</p>
-
-      <figure class="post-inline-img">
-        <img src="https://images.unsplash.com/photo-1527489377706-5bf97e608852?w=900&q=80"
-             alt="Wolf tracks in deep snow in a birch forest" loading="lazy" />
-        <figcaption>Fresh tracks found at 06:42 on the second morning. The stride pattern indicated a trot, not a hunt.</figcaption>
-      </figure>
-
-      <p>The wolves came on the third evening, twenty minutes before I had decided to give up and walk back to the car. They did not emerge dramatically. They materialised — three of them, adults, moving through the birch trees at a pace that looked unhurried and was, in fact, very fast. I had 40 seconds. I made 60 frames. Three of them were any good.</p>
-
-      <p>That ratio feels about right for this kind of work.</p>
-
-      <h2>Technical notes</h2>
-
-      <p>I was shooting with a 500mm prime at f/4, ISO 6400, in light that any reasonable person would describe as inadequate. The camera's subject tracking locked on immediately — a reminder that the tools available now would have seemed miraculous twenty years ago, and still require the photographer to be in the right place first.</p>
+    <article class="post-body reveal" id="postBody">
+      <!-- injected by JS -->
     </article>
-
-    <aside class="post-sidebar reveal" style="transition-delay:0.15s">
-      <div class="sidebar-card">
+    <aside class="post-sidebar reveal" id="postSidebar" style="transition-delay:0.15s">
+      <div class="sidebar-card" id="tocCard">
         <h4>Contents</h4>
-        <ul class="toc-list">
-          <li>The first day</li>
-          <li>The second day</li>
-          <li>Technical notes</li>
-        </ul>
+        <ul class="toc-list" id="postToc"></ul>
       </div>
       <div class="sidebar-card">
         <h4>Shot Data</h4>
-        <div class="exif-row"><span class="exif-label">Camera</span><span class="exif-val">Sony A1</span></div>
-        <div class="exif-row"><span class="exif-label">Lens</span><span class="exif-val">500mm f/4</span></div>
-        <div class="exif-row"><span class="exif-label">Aperture</span><span class="exif-val">f/4</span></div>
-        <div class="exif-row"><span class="exif-label">Shutter</span><span class="exif-val">1/800s</span></div>
-        <div class="exif-row"><span class="exif-label">ISO</span><span class="exif-val">6400</span></div>
-        <div class="exif-row"><span class="exif-label">Location</span><span class="exif-val">Poland</span></div>
+        <div id="postExif"></div>
       </div>
       <div class="sidebar-card">
         <h4>Share</h4>
         <div style="display:flex; gap:var(--s1); flex-wrap:wrap">
-          <a href="#" class="btn btn-outline" style="color:var(--forest);border-color:rgba(13,26,18,0.2);font-size:0.65rem;padding:0.4rem 0.9rem">Twitter</a>
-          <a href="#" class="btn btn-outline" style="color:var(--forest);border-color:rgba(13,26,18,0.2);font-size:0.65rem;padding:0.4rem 0.9rem">Copy link</a>
+          <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='Copied!';setTimeout(()=>{this.textContent='Copy link'},2000)})" class="btn btn-outline" style="color:var(--forest);border-color:rgba(13,26,18,0.2);font-size:0.65rem;padding:0.4rem 0.9rem">Copy link</button>
+          <a id="shareTwitter" href="#" target="_blank" class="btn btn-outline" style="color:var(--forest);border-color:rgba(13,26,18,0.2);font-size:0.65rem;padding:0.4rem 0.9rem">Twitter</a>
         </div>
       </div>
     </aside>
   </div>
 
   <!-- Related posts -->
-  <section class="section related-section">
+  <section class="section related-section" id="relatedSection" style="display:none">
     <div class="section-wide">
       <p class="section-label">More from the journal</p>
       <h2 class="section-title">Related Posts</h2>
-      <div class="posts-grid">
-        <article class="post-card reveal">
-          <a href="post.html">
-            <div class="post-card-img">
-              <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=700&q=80" alt="Mountain lake" loading="lazy" />
-            </div>
-            <div class="post-card-body">
-              <p class="post-tag">Landscape</p>
-              <h3 class="post-card-title">The Dolomites at First Light</h3>
-              <div class="post-meta">Dec 2025 &nbsp;·&nbsp; 6 min</div>
-            </div>
-          </a>
-        </article>
-        <article class="post-card reveal" style="transition-delay:0.1s">
-          <a href="post.html">
-            <div class="post-card-img">
-              <img src="https://images.unsplash.com/photo-1550159930-40066082a4fc?w=700&q=80" alt="Macro spider web" loading="lazy" />
-            </div>
-            <div class="post-card-body">
-              <p class="post-tag">Macro</p>
-              <h3 class="post-card-title">A World One Centimetre Wide</h3>
-              <div class="post-meta">Nov 2025 &nbsp;·&nbsp; 5 min</div>
-            </div>
-          </a>
-        </article>
-      </div>
+      <div class="posts-grid" id="relatedGrid"></div>
     </div>
   </section>
 
@@ -1233,5 +1172,114 @@ a { color: inherit; text-decoration: none; }
 
 })();
 </script>
+
+  <!-- Dynamic post loader (Supabase) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (async function() {
+    var SUPABASE_URL = 'https://oyexbfacsrhnewhabach.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_VpITpX1HIsA5SRUzw1wwKg_HLoMoZdM';
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ── Read ?id= from URL ──────────────────
+    var params = new URLSearchParams(window.location.search);
+    var id     = params.get('id');
+
+    if (!id) {
+      document.getElementById('postTitle').textContent = 'No post specified';
+      document.getElementById('postBody').innerHTML = '<p>No post ID was given. <a href="blog.html">Back to Journal</a></p>';
+      return;
+    }
+
+    var { data: post, error } = await sb.from('posts').select('*').eq('id', id).single();
+
+    if (error || !post) {
+      document.title = 'Post Not Found — Wild Frame';
+      document.getElementById('postTitle').textContent = 'Post not found';
+      document.getElementById('postBody').innerHTML = '<p>The post you are looking for does not exist. <a href="blog.html">Back to Journal</a></p>';
+      return;
+    }
+
+    // ── Page meta ───────────────────────────
+    document.title = post.title + ' — Wild Frame';
+    document.querySelector('meta[name="description"]').setAttribute('content', post.excerpt);
+
+    // ── Hero ────────────────────────────────
+    var heroImg = document.getElementById('postHeroImg');
+    heroImg.style.background = 'url(' + post.hero_img + ') center/cover no-repeat';
+
+    document.getElementById('postCategory').textContent = post.category;
+    document.getElementById('postTitle').textContent    = post.title;
+    document.getElementById('postMeta').innerHTML =
+      '<span>' + post.date + '</span>' +
+      ' &nbsp;·&nbsp; ' + post.read_time +
+      ' &nbsp;·&nbsp; ' + post.location;
+
+    // ── Body ────────────────────────────────
+    document.getElementById('postBody').innerHTML = post.body;
+
+    // ── TOC ─────────────────────────────────
+    var tocList = document.getElementById('postToc');
+    if (post.toc && post.toc.length) {
+      post.toc.forEach(function(item) {
+        var li = document.createElement('li');
+        li.textContent = item;
+        tocList.appendChild(li);
+      });
+    } else {
+      document.getElementById('tocCard').style.display = 'none';
+    }
+
+    // ── EXIF ────────────────────────────────
+    var exifEl = document.getElementById('postExif');
+    Object.entries(post.exif || {}).forEach(function(entry) {
+      var row = document.createElement('div');
+      row.className = 'exif-row';
+      row.innerHTML =
+        '<span class="exif-label">' + entry[0] + '</span>' +
+        '<span class="exif-val">' + entry[1] + '</span>';
+      exifEl.appendChild(row);
+    });
+
+    // ── Twitter share ───────────────────────
+    document.getElementById('shareTwitter').href =
+      'https://twitter.com/intent/tweet?text=' +
+      encodeURIComponent(post.title) + '&url=' +
+      encodeURIComponent(window.location.href);
+
+    // ── Related posts ───────────────────────
+    if (post.related && post.related.length) {
+      var relatedSection = document.getElementById('relatedSection');
+      var relatedGrid    = document.getElementById('relatedGrid');
+      relatedSection.style.display = '';
+
+      for (var i = 0; i < post.related.length; i++) {
+        var relId = post.related[i];
+        var { data: rel } = await sb.from('posts').select('*').eq('id', relId).single();
+        if (!rel) continue;
+        var article = document.createElement('article');
+        article.className = 'post-card reveal';
+        if (i > 0) article.style.transitionDelay = (i * 0.1) + 's';
+        article.innerHTML =
+          '<a href="post.html?id=' + rel.id + '">' +
+            '<div class="post-card-img"><img src="' + rel.thumb_img + '" alt="' + rel.title + '" loading="lazy" /></div>' +
+            '<div class="post-card-body">' +
+              '<p class="post-tag">' + rel.category + '</p>' +
+              '<h3 class="post-card-title">' + rel.title + '</h3>' +
+              '<div class="post-meta">' + rel.date + ' &nbsp;·&nbsp; ' + rel.read_time + '</div>' +
+            '</div>' +
+          '</a>';
+        relatedGrid.appendChild(article);
+      }
+    }
+
+    // ── Trigger reveal on new elements ──────
+    setTimeout(function() {
+      document.querySelectorAll('.reveal').forEach(function(el) {
+        el.classList.add('visible');
+      });
+    }, 100);
+  })();
+  </script>
 </body>
 </html>

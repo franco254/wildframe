@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Wild Frame</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+      --forest:#0D1A12; --bark:#3B2A1A; --sage:#7A9E7E;
+      --mist:#E8EEE6; --cream:#F5F0E8; --gold:#C89B4F; --gold-dim:#8A6A34;
+      --display:'Cormorant Garamond',Georgia,serif;
+      --body:'Inter',system-ui,sans-serif;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:var(--body); background:var(--cream); color:var(--forest); line-height:1.6; min-height:100vh; }
+
+    /* ── Login screen ── */
+    #loginScreen {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      background:var(--forest); padding:1.5rem;
+    }
+    .login-box {
+      background:var(--cream); border-radius:6px; padding:2rem;
+      width:100%; max-width:360px; text-align:center;
+    }
+    .login-box h1 {
+      font-family:var(--display); font-size:1.8rem; font-weight:300;
+      color:var(--forest); margin-bottom:0.5rem;
+    }
+    .login-box p { font-size:0.85rem; color:#5a6a5f; margin-bottom:1.5rem; }
+    .login-box input {
+      width:100%; padding:0.85rem 1rem; margin-bottom:1rem;
+      border:1px solid rgba(13,26,18,0.15); border-radius:2px;
+      font-family:var(--body); font-size:0.95rem; outline:none;
+    }
+    .login-box input:focus { border-color:var(--gold); }
+    .login-box button {
+      width:100%; padding:0.85rem; background:var(--gold); color:var(--forest);
+      border:none; border-radius:2px; font-weight:700; font-size:0.8rem;
+      letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+    }
+    .login-error { color:#c0392b; font-size:0.8rem; margin-top:0.75rem; display:none; }
+
+    /* ── Admin app ── */
+    #adminApp { display:none; }
+
+    .admin-header {
+      background:var(--forest); padding:1.25rem 1.5rem;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:10;
+    }
+    .admin-header h1 {
+      font-family:var(--display); font-size:1.4rem; font-weight:300; color:var(--cream);
+    }
+    .admin-header h1 span { color:var(--gold); }
+    .admin-nav { display:flex; gap:0.75rem; }
+    .admin-nav button {
+      background:transparent; border:1px solid rgba(232,238,230,0.2);
+      color:var(--cream); padding:0.5rem 1rem; border-radius:2px;
+      font-size:0.7rem; font-weight:600; letter-spacing:0.08em;
+      text-transform:uppercase; cursor:pointer;
+    }
+    .admin-nav button.active { background:var(--gold); border-color:var(--gold); color:var(--forest); }
+
+    .admin-body { max-width:760px; margin:0 auto; padding:1.5rem; }
+
+    /* ── Post list view ── */
+    .post-list-item {
+      background:#fff; border-radius:4px; padding:1rem 1.25rem;
+      margin-bottom:0.75rem; display:flex; align-items:center; gap:1rem;
+      border:1px solid rgba(13,26,18,0.07);
+    }
+    .post-list-thumb { width:64px; height:48px; border-radius:3px; overflow:hidden; flex-shrink:0; background:#eee; }
+    .post-list-thumb img { width:100%; height:100%; object-fit:cover; }
+    .post-list-info { flex:1; min-width:0; }
+    .post-list-title { font-family:var(--display); font-size:1.05rem; font-weight:400; color:var(--forest); }
+    .post-list-meta { font-size:0.72rem; color:#8a9e8f; margin-top:0.2rem; }
+    .post-list-actions { display:flex; gap:0.5rem; flex-shrink:0; }
+    .icon-btn {
+      width:32px; height:32px; border-radius:4px; border:1px solid rgba(13,26,18,0.12);
+      background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      font-size:0.85rem; color:#5a6a5f;
+    }
+    .icon-btn.delete:hover { background:#fdeded; color:#c0392b; border-color:#c0392b; }
+    .icon-btn.edit:hover { background:rgba(200,155,79,0.1); color:var(--gold-dim); border-color:var(--gold); }
+
+    .empty-state { text-align:center; padding:3rem 1rem; color:#8a9e8f; }
+    .empty-state p { font-family:var(--display); font-size:1.2rem; margin-bottom:0.5rem; }
+
+    /* ── Form ── */
+    .form-section { background:#fff; border-radius:4px; padding:1.5rem; margin-bottom:1rem; border:1px solid rgba(13,26,18,0.07); }
+    .form-section h3 {
+      font-size:0.68rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:1rem;
+    }
+    .form-group { margin-bottom:1rem; }
+    .form-group:last-child { margin-bottom:0; }
+    .form-label { display:block; font-size:0.7rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--bark); margin-bottom:0.4rem; }
+    .form-input, .form-select, .form-textarea {
+      width:100%; padding:0.7rem 0.9rem; background:#fff;
+      border:1px solid rgba(13,26,18,0.15); border-radius:2px;
+      font-family:var(--body); font-size:0.9rem; color:var(--forest); outline:none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--gold); }
+    .form-textarea { resize:vertical; min-height:80px; font-family:'Courier New',monospace; font-size:0.82rem; }
+    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .form-hint { font-size:0.72rem; color:#8a9e8f; margin-top:0.35rem; }
+
+    /* Image upload zone */
+    .upload-zone {
+      border:2px dashed rgba(13,26,18,0.2); border-radius:4px;
+      padding:1.5rem 1rem; text-align:center; cursor:pointer;
+      transition:border-color 0.2s; position:relative; overflow:hidden;
+    }
+    .upload-zone.dragover { border-color:var(--gold); background:rgba(200,155,79,0.04); }
+    .upload-zone img { max-width:100%; max-height:160px; border-radius:3px; }
+    .upload-zone p { font-size:0.82rem; color:#5a6a5f; }
+    .upload-zone .hint { font-size:0.7rem; color:#8a9e8f; margin-top:0.25rem; }
+    .upload-progress { font-size:0.75rem; color:var(--gold-dim); margin-top:0.5rem; }
+
+    /* EXIF / TOC repeatable rows */
+    .repeat-row { display:flex; gap:0.5rem; margin-bottom:0.5rem; }
+    .repeat-row input { flex:1; }
+    .repeat-row button {
+      width:34px; flex-shrink:0; border:1px solid rgba(13,26,18,0.15);
+      background:#fff; border-radius:2px; cursor:pointer; color:#c0392b; font-size:0.9rem;
+    }
+    .add-row-btn {
+      font-size:0.72rem; font-weight:600; color:var(--gold-dim);
+      background:none; border:none; cursor:pointer; padding:0.4rem 0;
+      letter-spacing:0.05em;
+    }
+
+    .related-chips { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+    .related-chip {
+      padding:0.4rem 0.8rem; border-radius:100px; font-size:0.72rem;
+      border:1px solid rgba(13,26,18,0.15); background:#fff; cursor:pointer;
+      transition:all 0.15s;
+    }
+    .related-chip.selected { background:var(--forest); color:var(--cream); border-color:var(--forest); }
+
+    .form-actions { display:flex; gap:0.75rem; position:sticky; bottom:0; background:var(--cream); padding:1rem 0; }
+    .btn-publish {
+      flex:1; padding:0.9rem; background:var(--gold); color:var(--forest);
+      border:none; border-radius:2px; font-weight:700; font-size:0.78rem;
+      letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+    }
+    .btn-cancel {
+      padding:0.9rem 1.5rem; background:transparent; color:#5a6a5f;
+      border:1px solid rgba(13,26,18,0.15); border-radius:2px;
+      font-weight:600; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+    }
+    .form-msg { padding:0.75rem 1rem; border-radius:3px; font-size:0.82rem; margin-bottom:1rem; display:none; }
+    .form-msg.error { background:#fdeded; color:#c0392b; display:block; }
+    .form-msg.success { background:rgba(122,158,126,0.15); color:var(--forest); display:block; }
+
+    .loading-spinner {
+      display:inline-block; width:14px; height:14px; border:2px solid rgba(13,26,18,0.2);
+      border-top-color:var(--forest); border-radius:50%;
+      animation:spin 0.6s linear infinite; vertical-align:middle; margin-right:0.4rem;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LOGIN ═══ -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h1>Wild<span style="color:var(--gold)">Frame</span> Admin</h1>
+      <p>Enter the admin password to manage posts.</p>
+      <input type="password" id="adminPassInput" placeholder="••••••••" autocomplete="off" />
+      <button id="loginBtn">Unlock</button>
+      <p class="login-error" id="loginError">Incorrect password.</p>
+    </div>
+  </div>
+
+  <!-- ═══ ADMIN APP ═══ -->
+  <div id="adminApp">
+    <header class="admin-header">
+      <h1>Wild<span>Frame</span> Admin</h1>
+      <div class="admin-nav">
+        <button id="navList" class="active">Posts</button>
+        <button id="navNew">New Post</button>
+      </div>
+    </header>
+
+    <main class="admin-body">
+
+      <!-- ── LIST VIEW ── -->
+      <div id="listView">
+        <div id="postListContainer"></div>
+      </div>
+
+      <!-- ── EDITOR VIEW ── -->
+      <div id="editorView" style="display:none">
+        <div class="form-msg" id="formMsg"></div>
+
+        <form id="postForm">
+          <input type="hidden" id="editingId" value="" />
+
+          <div class="form-section">
+            <h3>Basics</h3>
+            <div class="form-group">
+              <label class="form-label">Title</label>
+              <input class="form-input" id="fTitle" type="text" placeholder="e.g. Golden Hour in the Highlands" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">URL Slug (auto-generated, editable)</label>
+              <input class="form-input" id="fId" type="text" placeholder="golden-hour-highlands" required />
+              <p class="form-hint">This becomes post.html?id=your-slug — use lowercase, hyphens only.</p>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select" id="fCategory">
+                  <option>Landscape</option>
+                  <option>Wildlife</option>
+                  <option>Macro</option>
+                  <option>Gear</option>
+                  <option>Tips</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Location</label>
+                <input class="form-input" id="fLocation" type="text" placeholder="e.g. Maasai Mara, Kenya" />
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label">Date</label>
+                <input class="form-input" id="fDate" type="text" placeholder="June 2026" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Read time</label>
+                <input class="form-input" id="fReadTime" type="text" placeholder="6 min read" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Excerpt</label>
+              <textarea class="form-textarea" id="fExcerpt" style="min-height:60px;font-family:var(--body);font-size:0.9rem" placeholder="One or two sentences shown on the blog listing page." required></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Hero Image</h3>
+            <div class="upload-zone" id="dropZone">
+              <div id="dropZoneContent">
+                <p>📷 Tap to browse or drop image here</p>
+                <p class="hint">JPG, PNG, WebP — max 8MB</p>
+              </div>
+              <img id="previewImg" style="display:none" alt="Preview" />
+              <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none" />
+            </div>
+            <p class="upload-progress" id="uploadProgress" style="display:none"></p>
+            <input type="hidden" id="fHeroImg" />
+            <div class="form-group" style="margin-top:0.75rem">
+              <label class="form-label">Image alt text</label>
+              <input class="form-input" id="fHeroAlt" type="text" placeholder="Describe the image for accessibility" />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Article Body (HTML)</h3>
+            <div class="form-group">
+              <textarea class="form-textarea" id="fBody" style="min-height:240px" placeholder="<p>Your first paragraph...</p>
+<h2>A section heading</h2>
+<p>More content...</p>
+<blockquote>An optional pull quote.</blockquote>" required></textarea>
+              <p class="form-hint">Use &lt;p&gt;, &lt;h2&gt;, &lt;blockquote&gt;, &lt;figure&gt; tags. This becomes the post content.</p>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Table of Contents</h3>
+            <div id="tocRows"></div>
+            <button type="button" class="add-row-btn" id="addTocRow">+ Add section</button>
+          </div>
+
+          <div class="form-section">
+            <h3>Shot Data (EXIF)</h3>
+            <div id="exifRows"></div>
+            <button type="button" class="add-row-btn" id="addExifRow">+ Add field</button>
+          </div>
+
+          <div class="form-section">
+            <h3>Related Posts</h3>
+            <div class="related-chips" id="relatedChips">
+              <p style="font-size:0.8rem;color:#8a9e8f">Save this post first to link related posts.</p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-publish" id="publishBtn">Publish Post</button>
+            <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://oyexbfacsrhnewhabach.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_VpITpX1HIsA5SRUzw1wwKg_HLoMoZdM';
+    const ADMIN_PASSWORD = 'wildframe2026';
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ── AUTH ──────────────────────────────────
+    const loginScreen = document.getElementById('loginScreen');
+    const adminApp     = document.getElementById('adminApp');
+    const adminPassInput = document.getElementById('adminPassInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+
+    function tryLogin() {
+      if (adminPassInput.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem('wf_admin', '1');
+        loginScreen.style.display = 'none';
+        adminApp.style.display = 'block';
+        loadPosts();
+      } else {
+        loginError.style.display = 'block';
+        adminPassInput.value = '';
+      }
+    }
+    loginBtn.addEventListener('click', tryLogin);
+    adminPassInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+    if (sessionStorage.getItem('wf_admin') === '1') {
+      loginScreen.style.display = 'none';
+      adminApp.style.display = 'block';
+      loadPosts();
+    }
+
+    // ── NAV ───────────────────────────────────
+    const navList = document.getElementById('navList');
+    const navNew  = document.getElementById('navNew');
+    const listView = document.getElementById('listView');
+    const editorView = document.getElementById('editorView');
+
+    navList.addEventListener('click', () => showList());
+    navNew.addEventListener('click', () => showEditor());
+    document.getElementById('cancelBtn').addEventListener('click', () => showList());
+
+    function showList() {
+      navList.classList.add('active'); navNew.classList.remove('active');
+      listView.style.display = 'block'; editorView.style.display = 'none';
+      loadPosts();
+    }
+    function showEditor(post) {
+      navNew.classList.add('active'); navList.classList.remove('active');
+      listView.style.display = 'none'; editorView.style.display = 'block';
+      resetForm(post);
+    }
+
+    // ── LOAD POST LIST ────────────────────────
+    async function loadPosts() {
+      const container = document.getElementById('postListContainer');
+      container.innerHTML = '<p style="text-align:center;color:#8a9e8f;padding:2rem">Loading...</p>';
+
+      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+
+      if (error) {
+        container.innerHTML = '<p style="color:#c0392b;padding:1rem">Error loading posts: ' + error.message + '</p>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No posts yet</p><p style="font-size:0.85rem">Tap "New Post" above to write your first article.</p></div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      data.forEach(post => {
+        const item = document.createElement('div');
+        item.className = 'post-list-item';
+        item.innerHTML =
+          '<div class="post-list-thumb"><img src="' + (post.thumb_img || post.hero_img) + '" alt="" /></div>' +
+          '<div class="post-list-info">' +
+            '<p class="post-list-title">' + post.title + '</p>' +
+            '<p class="post-list-meta">' + post.category + ' · ' + post.date + '</p>' +
+          '</div>' +
+          '<div class="post-list-actions">' +
+            '<button class="icon-btn edit" data-id="' + post.id + '" title="Edit">✎</button>' +
+            '<button class="icon-btn delete" data-id="' + post.id + '" title="Delete">✕</button>' +
+          '</div>';
+        container.appendChild(item);
+      });
+
+      container.querySelectorAll('.icon-btn.edit').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const { data: post } = await sb.from('posts').select('*').eq('id', id).single();
+          if (post) showEditor(post);
+        });
+      });
+
+      container.querySelectorAll('.icon-btn.delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Delete this post permanently?')) return;
+          const id = btn.dataset.id;
+          const { error } = await sb.from('posts').delete().eq('id', id);
+          if (error) alert('Error deleting: ' + error.message);
+          else loadPosts();
+        });
+      });
+    }
+
+    // ── FORM RESET / POPULATE ─────────────────
+    let currentExifPairs = [];
+    let currentToc = [];
+    let selectedRelated = new Set();
+    let allPosts = [];
+
+    function resetForm(post) {
+      document.getElementById('formMsg').style.display = 'none';
+      document.getElementById('postForm').reset();
+      document.getElementById('previewImg').style.display = 'none';
+      document.getElementById('dropZoneContent').style.display = 'block';
+      document.getElementById('fHeroImg').value = '';
+      currentExifPairs = [];
+      currentToc = [];
+      selectedRelated = new Set();
+
+      if (post) {
+        document.getElementById('editingId').value = post.id;
+        document.getElementById('fTitle').value = post.title;
+        document.getElementById('fId').value = post.id;
+        document.getElementById('fId').disabled = true;
+        document.getElementById('fCategory').value = post.category;
+        document.getElementById('fLocation').value = post.location;
+        document.getElementById('fDate').value = post.date;
+        document.getElementById('fReadTime').value = post.read_time;
+        document.getElementById('fExcerpt').value = post.excerpt;
+        document.getElementById('fHeroImg').value = post.hero_img;
+        document.getElementById('fHeroAlt').value = post.hero_alt || '';
+        document.getElementById('fBody').value = post.body;
+        if (post.hero_img) {
+          document.getElementById('previewImg').src = post.hero_img;
+          document.getElementById('previewImg').style.display = 'block';
+          document.getElementById('dropZoneContent').style.display = 'none';
+        }
+        currentExifPairs = Object.entries(post.exif || {});
+        currentToc = post.toc || [];
+        selectedRelated = new Set(post.related || []);
+        document.getElementById('publishBtn').textContent = 'Update Post';
+      } else {
+        document.getElementById('editingId').value = '';
+        document.getElementById('fId').disabled = false;
+        currentExifPairs = [['Camera',''],['Lens',''],['Aperture',''],['Shutter',''],['ISO','']];
+        currentToc = [''];
+        document.getElementById('publishBtn').textContent = 'Publish Post';
+      }
+      renderExifRows();
+      renderTocRows();
+      renderRelatedChips(post ? post.id : null);
+    }
+
+    // Auto-slug from title
+    document.getElementById('fTitle').addEventListener('input', e => {
+      if (document.getElementById('editingId').value) return; // don't change slug when editing
+      const slug = e.target.value.toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+      document.getElementById('fId').value = slug;
+    });
+
+    // ── EXIF rows ──────────────────────────────
+    function renderExifRows() {
+      const container = document.getElementById('exifRows');
+      container.innerHTML = '';
+      currentExifPairs.forEach((pair, i) => {
+        const row = document.createElement('div');
+        row.className = 'repeat-row';
+        row.innerHTML =
+          '<input class="form-input exif-key" placeholder="Field (e.g. Camera)" value="' + (pair[0]||'') + '" />' +
+          '<input class="form-input exif-val" placeholder="Value (e.g. Sony A1)" value="' + (pair[1]||'') + '" />' +
+          '<button type="button" data-i="' + i + '">✕</button>';
+        container.appendChild(row);
+        row.querySelector('button').addEventListener('click', () => {
+          currentExifPairs.splice(i, 1);
+          renderExifRows();
+        });
+      });
+    }
+    document.getElementById('addExifRow').addEventListener('click', () => {
+      currentExifPairs.push(['','']);
+      renderExifRows();
+    });
+
+    // ── TOC rows ───────────────────────────────
+    function renderTocRows() {
+      const container = document.getElementById('tocRows');
+      container.innerHTML = '';
+      currentToc.forEach((val, i) => {
+        const row = document.createElement('div');
+        row.className = 'repeat-row';
+        row.innerHTML =
+          '<input class="form-input toc-val" placeholder="Section heading" value="' + (val||'') + '" />' +
+          '<button type="button" data-i="' + i + '">✕</button>';
+        container.appendChild(row);
+        row.querySelector('button').addEventListener('click', () => {
+          currentToc.splice(i, 1);
+          renderTocRows();
+        });
+      });
+    }
+    document.getElementById('addTocRow').addEventListener('click', () => {
+      currentToc.push('');
+      renderTocRows();
+    });
+
+    // ── Related chips ──────────────────────────
+    async function renderRelatedChips(excludeId) {
+      const { data } = await sb.from('posts').select('id, title');
+      allPosts = data || [];
+      const container = document.getElementById('relatedChips');
+      const others = allPosts.filter(p => p.id !== excludeId);
+      if (others.length === 0) {
+        container.innerHTML = '<p style="font-size:0.8rem;color:#8a9e8f">No other posts yet to relate to.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      others.forEach(p => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'related-chip' + (selectedRelated.has(p.id) ? ' selected' : '');
+        chip.textContent = p.title;
+        chip.addEventListener('click', () => {
+          if (selectedRelated.has(p.id)) selectedRelated.delete(p.id);
+          else selectedRelated.add(p.id);
+          chip.classList.toggle('selected');
+        });
+        container.appendChild(chip);
+      });
+    }
+
+    // ── IMAGE UPLOAD ───────────────────────────
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const previewImg = document.getElementById('previewImg');
+    const dropZoneContent = document.getElementById('dropZoneContent');
+    const uploadProgress = document.getElementById('uploadProgress');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFile(e.dataTransfer.files[0]);
+    });
+
+    async function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      if (file.size > 8 * 1024 * 1024) {
+        alert('Image too large. Max 8MB.');
+        return;
+      }
+
+      // Show local preview immediately
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewImg.style.display = 'block';
+        dropZoneContent.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage
+      uploadProgress.style.display = 'block';
+      uploadProgress.innerHTML = '<span class="loading-spinner"></span> Uploading...';
+
+      const ext = file.name.split('.').pop();
+      const fileName = 'post-' + Date.now() + '-' + Math.random().toString(36).slice(2,8) + '.' + ext;
+
+      const { data, error } = await sb.storage.from('post-images').upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+      if (error) {
+        uploadProgress.textContent = 'Upload failed: ' + error.message;
+        uploadProgress.style.color = '#c0392b';
+        return;
+      }
+
+      const { data: urlData } = sb.storage.from('post-images').getPublicUrl(fileName);
+      document.getElementById('fHeroImg').value = urlData.publicUrl;
+      uploadProgress.textContent = '✓ Uploaded successfully';
+      uploadProgress.style.color = 'var(--gold-dim)';
+    }
+
+    // ── FORM SUBMIT ────────────────────────────
+    document.getElementById('postForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const msgEl = document.getElementById('formMsg');
+      msgEl.style.display = 'none';
+
+      const id = document.getElementById('fId').value.trim();
+      const heroImg = document.getElementById('fHeroImg').value;
+
+      if (!id) {
+        msgEl.className = 'form-msg error'; msgEl.textContent = 'Please provide a URL slug.'; msgEl.style.display = 'block';
+        return;
+      }
+      if (!heroImg) {
+        msgEl.className = 'form-msg error'; msgEl.textContent = 'Please upload a hero image.'; msgEl.style.display = 'block';
+        return;
+      }
+
+      // Collect EXIF from current rows
+      const exifObj = {};
+      document.querySelectorAll('#exifRows .repeat-row').forEach(row => {
+        const k = row.querySelector('.exif-key').value.trim();
+        const v = row.querySelector('.exif-val').value.trim();
+        if (k) exifObj[k] = v;
+      });
+
+      // Collect TOC
+      const tocArr = [];
+      document.querySelectorAll('#tocRows .repeat-row').forEach(row => {
+        const v = row.querySelector('.toc-val').value.trim();
+        if (v) tocArr.push(v);
+      });
+
+      const postData = {
+        id: id,
+        title: document.getElementById('fTitle').value.trim(),
+        category: document.getElementById('fCategory').value,
+        date: document.getElementById('fDate').value.trim() || 'June 2026',
+        read_time: document.getElementById('fReadTime').value.trim() || '5 min read',
+        location: document.getElementById('fLocation').value.trim(),
+        excerpt: document.getElementById('fExcerpt').value.trim(),
+        hero_img: heroImg,
+        hero_alt: document.getElementById('fHeroAlt').value.trim(),
+        thumb_img: heroImg,
+        exif: exifObj,
+        toc: tocArr,
+        body: document.getElementById('fBody').value,
+        related: Array.from(selectedRelated)
+      };
+
+      const editingId = document.getElementById('editingId').value;
+      let result;
+      if (editingId) {
+        result = await sb.from('posts').update(postData).eq('id', editingId);
+      } else {
+        result = await sb.from('posts').insert(postData);
+      }
+
+      if (result.error) {
+        msgEl.className = 'form-msg error';
+        msgEl.textContent = 'Error: ' + result.error.message;
+        msgEl.style.display = 'block';
+      } else {
+        msgEl.className = 'form-msg success';
+        msgEl.textContent = editingId ? 'Post updated successfully!' : 'Post published successfully!';
+        msgEl.style.display = 'block';
+        setTimeout(() => showList(), 1200);
+      }
+    });
+  </script>
+</body>
+</html>

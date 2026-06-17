@@ -999,66 +999,8 @@ a { color: inherit; text-decoration: none; }
         <button class="filter-btn">Tips</button>
       </div>
 
-      <div class="post-list">
-
-        <article class="post-row reveal">
-          <a href="post.html" class="post-row-img">
-            <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=600&q=80"
-                 alt="Wolf at dusk" loading="lazy" />
-          </a>
-          <div class="post-row-body">
-            <p class="post-tag">Wildlife</p>
-            <h2 class="post-row-title"><a href="post.html">Tracking Wolves in Białowieża</a></h2>
-            <p class="post-row-excerpt">Three days inside Europe's last primeval forest, waiting for a shadow that moves between the trees only at dusk. I came for wolves. I left with something harder to describe.</p>
-            <div class="post-meta">January 2026 &nbsp;·&nbsp; 8 min read</div>
-          </div>
-        </article>
-
-        <div class="post-row-divider"></div>
-
-        <article class="post-row reveal">
-          <a href="post.html" class="post-row-img">
-            <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80"
-                 alt="Mountain lake at sunrise" loading="lazy" />
-          </a>
-          <div class="post-row-body">
-            <p class="post-tag">Landscape</p>
-            <h2 class="post-row-title"><a href="post.html">The Dolomites at First Light</a></h2>
-            <p class="post-row-excerpt">Why I drive four hours in the dark to be alone with the mountains before anyone else arrives. The quality of silence at 5am in a mountain car park is its own reward.</p>
-            <div class="post-meta">December 2025 &nbsp;·&nbsp; 6 min read</div>
-          </div>
-        </article>
-
-        <div class="post-row-divider"></div>
-
-        <article class="post-row reveal">
-          <a href="post.html" class="post-row-img">
-            <img src="https://images.unsplash.com/photo-1550159930-40066082a4fc?w=600&q=80"
-                 alt="Dew spider web macro" loading="lazy" />
-          </a>
-          <div class="post-row-body">
-            <p class="post-tag">Macro</p>
-            <h2 class="post-row-title"><a href="post.html">A World One Centimetre Wide</a></h2>
-            <p class="post-row-excerpt">The surprising universe that exists in a single hedgerow on an October morning, if you slow down enough to look. You do not need to travel far for this kind of wonder.</p>
-            <div class="post-meta">November 2025 &nbsp;·&nbsp; 5 min read</div>
-          </div>
-        </article>
-
-        <div class="post-row-divider"></div>
-
-        <article class="post-row reveal">
-          <a href="post.html" class="post-row-img">
-            <img src="https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?w=600&q=80"
-                 alt="Camera gear laid out on a rock" loading="lazy" />
-          </a>
-          <div class="post-row-body">
-            <p class="post-tag">Gear</p>
-            <h2 class="post-row-title"><a href="post.html">What I Actually Use in the Field</a></h2>
-            <p class="post-row-excerpt">After years of testing, this is the kit that earns its weight. A brutally honest look at what stays in the bag and what got left at home permanently.</p>
-            <div class="post-meta">October 2025 &nbsp;·&nbsp; 10 min read</div>
-          </div>
-        </article>
-
+      <div class="post-list" id="postList">
+        <!-- Injected by JS -->
       </div>
 
     </div>
@@ -1201,6 +1143,53 @@ a { color: inherit; text-decoration: none; }
         btn.classList.add('active');
       });
     });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (async function() {
+    var list = document.getElementById('postList');
+    if (!list) return;
+
+    var SUPABASE_URL = 'https://oyexbfacsrhnewhabach.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_VpITpX1HIsA5SRUzw1wwKg_HLoMoZdM';
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    list.innerHTML = '<p style="text-align:center;color:#8a9e8f;padding:2rem">Loading posts...</p>';
+
+    var { data: posts, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+
+    if (error) {
+      list.innerHTML = '<p style="text-align:center;color:#c0392b;padding:2rem">Could not load posts.</p>';
+      return;
+    }
+    if (!posts || posts.length === 0) {
+      list.innerHTML = '<p style="text-align:center;color:#8a9e8f;padding:2rem">No posts published yet.</p>';
+      return;
+    }
+
+    list.innerHTML = '';
+    posts.forEach(function(post, i) {
+      var divider = i > 0 ? '<div class="post-row-divider"></div>' : '';
+      var article = document.createElement('div');
+      article.innerHTML = divider +
+        '<article class="post-row reveal" style="transition-delay:' + (i*0.08) + 's">' +
+          '<a href="post.html?id=' + post.id + '" class="post-row-img">' +
+            '<img src="' + post.thumb_img + '" alt="' + post.title + '" loading="lazy" />' +
+          '</a>' +
+          '<div class="post-row-body">' +
+            '<p class="post-tag">' + post.category + '</p>' +
+            '<h2 class="post-row-title"><a href="post.html?id=' + post.id + '">' + post.title + '</a></h2>' +
+            '<p class="post-row-excerpt">' + post.excerpt + '</p>' +
+            '<div class="post-meta">' + post.date + ' &nbsp;·&nbsp; ' + post.read_time + '</div>' +
+          '</div>' +
+        '</article>';
+      while (article.firstChild) list.appendChild(article.firstChild);
+    });
+
+    setTimeout(function() {
+      document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
+    }, 100);
+  })();
   </script>
 </body>
 </html>
