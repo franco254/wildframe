@@ -697,6 +697,8 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 768px) {
   .nav-links, .nav-cta { display: none; }
   .nav-toggle { display: flex; }
+  .nav-logo { transition: opacity 0.2s; }
+  body.drawer-open .nav-logo { opacity: 0; pointer-events: none; }
 
   /* ── Overlay backdrop ── */
   .nav-backdrop {
@@ -973,13 +975,33 @@ a { color: inherit; text-decoration: none; }
     <button class="nav-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
   </nav>
 
-  <div class="nav-mobile">
-    <a href="index.html">Home</a>
-    <a href="blog.html">Journal</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </div>
+  <!-- Backdrop -->
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <!-- Side drawer -->
+  <nav class="nav-mobile" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <div class="nav-mobile-header">
+      <a href="index.html" class="nav-mobile-logo">Wild<span>Frame</span></a>
+      <button class="nav-drawer-close" id="drawerClose" aria-label="Close menu">✕</button>
+    </div>
+    <div class="nav-mobile-links">
+      <a href="index.html"><span class="nav-icon">—</span>Home</a>
+      <a href="blog.html" class="active"><span class="nav-icon">—</span>Journal</a>
+      <a href="gallery.html"><span class="nav-icon">—</span>Gallery</a>
+      <a href="shop.html"><span class="nav-icon">—</span>Prints</a>
+      <div class="nav-mobile-divider"></div>
+      <a href="about.html"><span class="nav-icon">—</span>About</a>
+      <a href="contact.html"><span class="nav-icon">—</span>Contact</a>
+    </div>
+    <div class="nav-mobile-footer">
+      <a href="shop.html" class="cta-btn">View Fine Art Prints</a>
+      <div class="nav-mobile-social">
+        <a href="#">Instagram</a>
+        <a href="#">500px</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </nav>
 
   <header class="page-hero">
     <p class="section-label" style="justify-content:center;color:var(--gold);margin-bottom:var(--s2)">Field notes</p>
@@ -1044,6 +1066,7 @@ a { color: inherit; text-decoration: none; }
     toggle.classList.add('open');
     drawer.classList.add('open');
     backdrop.classList.add('open');
+    document.body.classList.add('drawer-open');
     document.body.style.overflow = 'hidden';
     toggle.setAttribute('aria-expanded', 'true');
   }
@@ -1052,6 +1075,7 @@ a { color: inherit; text-decoration: none; }
     toggle.classList.remove('open');
     drawer.classList.remove('open');
     backdrop.classList.remove('open');
+    document.body.classList.remove('drawer-open');
     document.body.style.overflow = '';
     toggle.setAttribute('aria-expanded', 'false');
   }

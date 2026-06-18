@@ -697,6 +697,8 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 768px) {
   .nav-links, .nav-cta { display: none; }
   .nav-toggle { display: flex; }
+  .nav-logo { transition: opacity 0.2s; }
+  body.drawer-open .nav-logo { opacity: 0; pointer-events: none; }
 
   /* ── Overlay backdrop ── */
   .nav-backdrop {
@@ -923,11 +925,33 @@ a { color: inherit; text-decoration: none; }
     <button class="nav-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
   </nav>
 
-  <div class="nav-mobile">
-    <a href="index.html">Home</a><a href="blog.html">Journal</a>
-    <a href="gallery.html">Gallery</a><a href="shop.html">Prints</a><a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </div>
+  <!-- Backdrop -->
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <!-- Side drawer -->
+  <nav class="nav-mobile" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <div class="nav-mobile-header">
+      <a href="index.html" class="nav-mobile-logo">Wild<span>Frame</span></a>
+      <button class="nav-drawer-close" id="drawerClose" aria-label="Close menu">✕</button>
+    </div>
+    <div class="nav-mobile-links">
+      <a href="index.html"><span class="nav-icon">—</span>Home</a>
+      <a href="blog.html"><span class="nav-icon">—</span>Journal</a>
+      <a href="gallery.html" class="active"><span class="nav-icon">—</span>Gallery</a>
+      <a href="shop.html"><span class="nav-icon">—</span>Prints</a>
+      <div class="nav-mobile-divider"></div>
+      <a href="about.html"><span class="nav-icon">—</span>About</a>
+      <a href="contact.html"><span class="nav-icon">—</span>Contact</a>
+    </div>
+    <div class="nav-mobile-footer">
+      <a href="shop.html" class="cta-btn">View Fine Art Prints</a>
+      <div class="nav-mobile-social">
+        <a href="#">Instagram</a>
+        <a href="#">500px</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </nav>
 
   <header class="page-hero">
     <p class="section-label" style="justify-content:center;color:var(--gold);margin-bottom:var(--s2)">Fine art prints available</p>
@@ -936,50 +960,15 @@ a { color: inherit; text-decoration: none; }
   </header>
 
   <div class="filter-bar reveal" style="max-width:1200px;margin:var(--s4) auto 0;padding:0 var(--s4)">
-    <button class="filter-btn active">All</button>
-    <button class="filter-btn">Landscape</button>
-    <button class="filter-btn">Wildlife</button>
-    <button class="filter-btn">Macro</button>
-    <button class="filter-btn">Abstract</button>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="landscape">Landscape</button>
+    <button class="filter-btn" data-filter="wildlife">Wildlife</button>
+    <button class="filter-btn" data-filter="macro">Macro</button>
+    <button class="filter-btn" data-filter="abstract">Abstract</button>
   </div>
 
-  <div class="masonry reveal">
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1400&q=85" data-alt="Mountain valley Norway" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=700&q=80" alt="Mountain valley at golden hour" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">Valley Light</p><p class="masonry-item-loc">Norway · 2025</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1400&q=85" data-alt="Wolf in forest" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=700&q=80" alt="Wolf at dusk" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">The Pack</p><p class="masonry-item-loc">Poland · 2026</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1550159930-40066082a4fc?w=1400&q=85" data-alt="Dew spider web" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1550159930-40066082a4fc?w=700&q=80" alt="Macro spider web with dew" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">Morning Web</p><p class="masonry-item-loc">England · 2025</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1400&q=85" data-alt="Forest light" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=700&q=80" alt="Sunlight through dense forest" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">Cathedral</p><p class="masonry-item-loc">Germany · 2025</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=85" data-alt="Misty valley sunrise" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=700&q=80" alt="Misty valley at sunrise" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">First Light</p><p class="masonry-item-loc">Slovenia · 2025</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1400&q=85" data-alt="Eagle in flight" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=700&q=80" alt="Eagle against stormy sky" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">Storm Hunter</p><p class="masonry-item-loc">Scotland · 2025</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1400&q=85" data-alt="Mountain lake" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=700&q=80" alt="Mountain lake at sunrise with fog" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">Mirror Lake</p><p class="masonry-item-loc">Italy · 2025</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=1400&q=85" data-alt="Forest fog" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=700&q=80" alt="Fog in pine forest" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">The Quiet Season</p><p class="masonry-item-loc">Sweden · 2024</p></div></div>
-    </div>
-    <div class="masonry-item" data-src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=1400&q=85" data-alt="Coastline cliffs" tabindex="0" role="button">
-      <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=700&q=80" alt="Dramatic coastline at dusk" loading="lazy" />
-      <div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">Coastline</p><p class="masonry-item-loc">Ireland · 2024</p></div></div>
-    </div>
+  <div class="masonry reveal" id="masonryGrid">
+    <p style="text-align:center;color:#8a9e8f;padding:3rem;grid-column:1/-1">Loading gallery...</p>
   </div>
 
   <!-- Admin Upload Button (fixed) -->
@@ -1146,6 +1135,7 @@ a { color: inherit; text-decoration: none; }
     toggle.classList.add('open');
     drawer.classList.add('open');
     backdrop.classList.add('open');
+    document.body.classList.add('drawer-open');
     document.body.style.overflow = 'hidden';
     toggle.setAttribute('aria-expanded', 'true');
   }
@@ -1154,6 +1144,7 @@ a { color: inherit; text-decoration: none; }
     toggle.classList.remove('open');
     drawer.classList.remove('open');
     backdrop.classList.remove('open');
+    document.body.classList.remove('drawer-open');
     document.body.style.overflow = '';
     toggle.setAttribute('aria-expanded', 'false');
   }
@@ -1299,14 +1290,95 @@ a { color: inherit; text-decoration: none; }
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   // Filter
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      currentFilter = btn.dataset.filter || 'all';
+      renderGallery();
     });
   });
+
+  // ── SUPABASE SETUP ────────────────────────
+  const SUPABASE_URL = 'https://oyexbfacsrhnewhabach.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_VpITpX1HIsA5SRUzw1wwKg_HLoMoZdM';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let galleryImages = [];
+  let currentFilter = 'all';
+
+  async function loadGallery() {
+    const grid = document.getElementById('masonryGrid');
+    const { data, error } = await sb.from('gallery_images').select('*').order('created_at', { ascending: false });
+
+    if (error) {
+      grid.innerHTML = '<p style="text-align:center;color:#c0392b;padding:3rem;grid-column:1/-1">Could not load gallery.</p>';
+      return;
+    }
+
+    galleryImages = data || [];
+    renderGallery();
+  }
+
+  function renderGallery() {
+    const grid = document.getElementById('masonryGrid');
+    const filtered = currentFilter === 'all'
+      ? galleryImages
+      : galleryImages.filter(img => img.category === currentFilter);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<p style="text-align:center;color:#8a9e8f;padding:3rem;grid-column:1/-1">No images yet' + (currentFilter !== 'all' ? ' in this category' : '') + '.</p>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    filtered.forEach((img, i) => {
+      const item = document.createElement('div');
+      item.className = 'masonry-item';
+      item.dataset.src = img.image_url;
+      item.dataset.alt = img.title;
+      item.dataset.id = img.id;
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('role', 'button');
+      item.innerHTML =
+        '<img src="' + img.image_url + '" alt="' + img.title + '" loading="lazy" style="width:100%;display:block;" />' +
+        '<div class="masonry-item-overlay"><div class="masonry-item-info">' +
+          '<p class="masonry-item-title">' + img.title + '</p>' +
+          '<p class="masonry-item-loc">' + (img.location || '') + '</p>' +
+        '</div></div>' +
+        (isAdmin ? '<button class="gallery-delete-btn" data-id="' + img.id + '" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(13,26,18,0.8);color:#fff;border:none;cursor:pointer;font-size:0.8rem;z-index:5;">✕</button>' : '');
+      item.style.position = 'relative';
+
+      item.addEventListener('click', (e) => {
+        if (e.target.classList.contains('gallery-delete-btn')) return;
+        const lb = document.querySelector('.lightbox');
+        const lbImg = lb && lb.querySelector('img');
+        if (lbImg) { lbImg.src = img.image_url; lbImg.alt = img.title; lb.classList.add('open'); document.body.style.overflow = 'hidden'; }
+      });
+
+      grid.appendChild(item);
+    });
+
+    if (isAdmin) {
+      grid.querySelectorAll('.gallery-delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm('Delete this image?')) return;
+          const id = btn.dataset.id;
+          const { error } = await sb.from('gallery_images').delete().eq('id', id);
+          if (!error) {
+            galleryImages = galleryImages.filter(img => img.id !== id);
+            renderGallery();
+          }
+        });
+      });
+    }
+  }
+
+  loadGallery();
 
   // ── ADMIN UPLOAD ─────────────────────────
   const ADMIN_PASSWORD = 'wildframe2026';
@@ -1339,6 +1411,7 @@ a { color: inherit; text-decoration: none; }
       loginModal.style.display = 'none';
       adminTrigger.style.borderColor = 'rgba(200,155,79,0.8)';
       adminTrigger.style.color = 'var(--gold)';
+      renderGallery(); // re-render to show delete buttons
       openUpload();
     } else {
       loginError.style.display = 'block';
@@ -1375,48 +1448,66 @@ a { color: inherit; text-decoration: none; }
 
   function handleFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
-    if (file.size > 10 * 1024 * 1024) { uploadError.textContent = 'Image too large. Max 10MB.'; uploadError.style.display = 'block'; return; }
+    if (file.size > 8 * 1024 * 1024) { uploadError.textContent = 'Image too large. Max 8MB.'; uploadError.style.display = 'block'; return; }
     selectedFile = file;
     const reader = new FileReader();
     reader.onload = e => { previewImg.src = e.target.result; previewImg.style.display = 'block'; dropContent.style.display = 'none'; };
     reader.readAsDataURL(file);
   }
 
-  uploadSubmit.addEventListener('click', () => {
+  uploadSubmit.addEventListener('click', async () => {
     const title    = document.getElementById('imgTitle').value.trim();
     const location = document.getElementById('imgLocation').value.trim() || 'Uploaded';
     const category = document.getElementById('imgCategory').value;
-    if (!selectedFile || !title) { uploadError.textContent = 'Please select an image and add a title.'; uploadError.style.display = 'block'; return; }
-    uploadError.style.display = 'none';
-    const reader = new FileReader();
-    reader.onload = e => {
-      addToMasonry(e.target.result, title, location, category);
-      uploadModal.style.display = 'none';
-      adminTrigger.textContent = '\u2713';
-      setTimeout(() => { adminTrigger.textContent = '+'; }, 2000);
-    };
-    reader.readAsDataURL(selectedFile);
-  });
 
-  function addToMasonry(src, title, location, category) {
-    const masonry = document.querySelector('.masonry');
-    const item = document.createElement('div');
-    item.className = 'masonry-item';
-    item.dataset.src = src;
-    item.dataset.alt = title;
-    item.dataset.category = category;
-    item.setAttribute('tabindex','0');
-    item.setAttribute('role','button');
-    item.innerHTML = '<img src="' + src + '" alt="' + title + '" style="width:100%;display:block;" /><div class="masonry-item-overlay"><div class="masonry-item-info"><p class="masonry-item-title">' + title + '</p><p class="masonry-item-loc">' + location + '</p></div></div>';
-    item.addEventListener('click', () => {
-      const lb = document.querySelector('.lightbox');
-      const img = lb && lb.querySelector('img');
-      if (img) { img.src = src; img.alt = title; lb.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    if (!selectedFile || !title) {
+      uploadError.textContent = 'Please select an image and add a title.';
+      uploadError.style.display = 'block';
+      return;
+    }
+    uploadError.style.display = 'none';
+    uploadSubmit.textContent = 'Uploading...';
+    uploadSubmit.disabled = true;
+
+    const ext = selectedFile.name.split('.').pop();
+    const fileName = 'gallery-' + Date.now() + '-' + Math.random().toString(36).slice(2,8) + '.' + ext;
+
+    const { error: uploadErr } = await sb.storage.from('post-images').upload(fileName, selectedFile, {
+      cacheControl: '3600',
+      upsert: false
     });
-    masonry.insertBefore(item, masonry.firstChild);
-    item.style.opacity = '0'; item.style.transform = 'scale(0.95)'; item.style.transition = 'opacity 0.4s ease,transform 0.4s ease';
-    requestAnimationFrame(() => requestAnimationFrame(() => { item.style.opacity = '1'; item.style.transform = 'scale(1)'; }));
-  }
+
+    if (uploadErr) {
+      uploadError.textContent = 'Upload failed: ' + uploadErr.message;
+      uploadError.style.display = 'block';
+      uploadSubmit.textContent = 'Add to Gallery';
+      uploadSubmit.disabled = false;
+      return;
+    }
+
+    const { data: urlData } = sb.storage.from('post-images').getPublicUrl(fileName);
+
+    const { error: insertErr } = await sb.from('gallery_images').insert({
+      title: title,
+      location: location,
+      category: category,
+      image_url: urlData.publicUrl
+    });
+
+    uploadSubmit.textContent = 'Add to Gallery';
+    uploadSubmit.disabled = false;
+
+    if (insertErr) {
+      uploadError.textContent = 'Save failed: ' + insertErr.message;
+      uploadError.style.display = 'block';
+      return;
+    }
+
+    uploadModal.style.display = 'none';
+    adminTrigger.textContent = '\u2713';
+    setTimeout(() => { adminTrigger.textContent = '+'; }, 2000);
+    loadGallery();
+  });
   </script>
 </body>
 </html>

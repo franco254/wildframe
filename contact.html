@@ -696,6 +696,8 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 768px) {
   .nav-links, .nav-cta { display: none; }
   .nav-toggle { display: flex; }
+  .nav-logo { transition: opacity 0.2s; }
+  body.drawer-open .nav-logo { opacity: 0; pointer-events: none; }
 
   /* ── Overlay backdrop ── */
   .nav-backdrop {
@@ -1091,6 +1093,7 @@ a { color: inherit; text-decoration: none; }
     toggle.classList.add('open');
     drawer.classList.add('open');
     backdrop.classList.add('open');
+    document.body.classList.add('drawer-open');
     document.body.style.overflow = 'hidden';
     toggle.setAttribute('aria-expanded', 'true');
   }
@@ -1099,6 +1102,7 @@ a { color: inherit; text-decoration: none; }
     toggle.classList.remove('open');
     drawer.classList.remove('open');
     backdrop.classList.remove('open');
+    document.body.classList.remove('drawer-open');
     document.body.style.overflow = '';
     toggle.setAttribute('aria-expanded', 'false');
   }
