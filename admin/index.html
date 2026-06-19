@@ -560,10 +560,41 @@
       handleFile(e.dataTransfer.files[0]);
     });
 
+    function compressImage(file, maxWidth, quality) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; };
+        reader.onerror = reject;
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxWidth) {
+            h = Math.round(h * (maxWidth / w));
+            w = maxWidth;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob(
+            blob => {
+              if (!blob) { reject(new Error('Compression failed')); return; }
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
     async function handleFile(file) {
       if (!file || !file.type.startsWith('image/')) return;
-      if (file.size > 8 * 1024 * 1024) {
-        alert('Image too large. Max 8MB.');
+      if (file.size > 15 * 1024 * 1024) {
+        alert('Image too large. Max 15MB.');
         return;
       }
 
@@ -576,16 +607,25 @@
       };
       reader.readAsDataURL(file);
 
-      // Upload to Supabase Storage
+      // Compress before upload
       uploadProgress.style.display = 'block';
+      uploadProgress.innerHTML = '<span class="loading-spinner"></span> Optimizing image...';
+
+      let fileToUpload;
+      try {
+        fileToUpload = await compressImage(file, 1800, 0.85);
+      } catch (err) {
+        fileToUpload = file;
+      }
+
       uploadProgress.innerHTML = '<span class="loading-spinner"></span> Uploading...';
 
-      const ext = file.name.split('.').pop();
-      const fileName = 'post-' + Date.now() + '-' + Math.random().toString(36).slice(2,8) + '.' + ext;
+      const fileName = 'post-' + Date.now() + '-' + Math.random().toString(36).slice(2,8) + '.jpg';
 
-      const { data, error } = await sb.storage.from('post-images').upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
+      const { data, error } = await sb.storage.from('post-images').upload(fileName, fileToUpload, {
+        cacheControl: '31536000',
+        upsert: false,
+        contentType: 'image/jpeg'
       });
 
       if (error) {
