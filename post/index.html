@@ -3,8 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tracking Wolves in Białowieża — Wild Frame</title>
-  <meta name="description" content="Three days inside Europe's last primeval forest, waiting for a shadow that moves between the trees only at dusk." />
+  <link rel="icon" type="image/svg+xml" href="/wildframe/favicon.svg" />
+  <title>WildFrame Journal</title>
+  <meta name="description" content="A photography story from the WildFrame journal." />
+  <link rel="canonical" id="canonicalLink" href="https://franco254.github.io/wildframe/post/" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="WildFrame" />
+  <meta property="og:title" id="ogTitle" content="WildFrame Journal" />
+  <meta property="og:description" id="ogDescription" content="A photography story from the WildFrame journal." />
+  <meta property="og:image" id="ogImage" content="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1200&q=80" />
+  <meta property="og:url" id="ogUrl" content="https://franco254.github.io/wildframe/post/" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" id="twitterTitle" content="WildFrame Journal" />
+  <meta name="twitter:description" id="twitterDescription" content="A photography story from the WildFrame journal." />
+  <meta name="twitter:image" id="twitterImage" content="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1200&q=80" />
+
+  <script type="application/ld+json" id="articleSchema">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "WildFrame Journal",
+    "url": "https://franco254.github.io/wildframe/post/"
+  }
+  </script>
+
   <style>
 /* =============================================
    NATURE BLOG — Design Tokens & Global Styles
@@ -1227,8 +1251,34 @@ a { color: inherit; text-decoration: none; }
     }
 
     // ── Page meta ───────────────────────────
-    document.title = post.title + ' — Wild Frame';
+    var pageUrl = 'https://franco254.github.io/wildframe/post/?id=' + post.id;
+    document.title = post.title + ' — WildFrame Journal';
     document.querySelector('meta[name="description"]').setAttribute('content', post.excerpt);
+    document.getElementById('canonicalLink').setAttribute('href', pageUrl);
+
+    document.getElementById('ogTitle').setAttribute('content', post.title + ' — WildFrame');
+    document.getElementById('ogDescription').setAttribute('content', post.excerpt);
+    document.getElementById('ogImage').setAttribute('content', post.hero_img);
+    document.getElementById('ogUrl').setAttribute('content', pageUrl);
+
+    document.getElementById('twitterTitle').setAttribute('content', post.title + ' — WildFrame');
+    document.getElementById('twitterDescription').setAttribute('content', post.excerpt);
+    document.getElementById('twitterImage').setAttribute('content', post.hero_img);
+
+    var schemaEl = document.getElementById('articleSchema');
+    if (schemaEl) {
+      schemaEl.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "description": post.excerpt,
+        "image": post.hero_img,
+        "datePublished": post.created_at || post.date,
+        "url": pageUrl,
+        "author": { "@type": "Person", "name": "WildFrame" },
+        "publisher": { "@type": "Organization", "name": "WildFrame" }
+      });
+    }
 
     // ── Hero ────────────────────────────────
     var heroImg = document.getElementById('postHeroImg');
