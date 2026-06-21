@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/wildframe/favicon.svg" />
+  <link rel="alternate" type="application/rss+xml" title="WildFrame Journal RSS Feed" href="/wildframe/feed.xml" />
   <title>WildFrame — Nature & Wildlife Photography, Fine Art Prints</title>
   <meta name="description" content="WildFrame is a visual journal of the world's wild places. Landscape, wildlife, and macro photography, plus signed fine art prints shipped worldwide." />
   <link rel="canonical" href="https://franco254.github.io/wildframe/" />
@@ -945,7 +946,7 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-mobile-social">
         <a href="#">Instagram</a>
         <a href="#">500px</a>
-        <a href="#">RSS</a>
+        <a href="/wildframe/feed.xml">RSS</a>
       </div>
     </div>
   </nav>
@@ -1159,7 +1160,7 @@ a { color: inherit; text-decoration: none; }
         <ul>
           <li><a href="#">Instagram</a></li>
           <li><a href="#">500px</a></li>
-          <li><a href="#">RSS Feed</a></li>
+          <li><a href="/wildframe/feed.xml">RSS Feed</a></li>
         </ul>
       </div>
     </div>
@@ -1168,7 +1169,7 @@ a { color: inherit; text-decoration: none; }
       <div class="social-links">
         <a href="#">Instagram</a>
         <a href="#">500px</a>
-        <a href="#">RSS</a>
+        <a href="/wildframe/feed.xml">RSS</a>
         <button class="back-to-top" style="background:none;border:none;color:rgba(232,238,230,0.3);font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;">↑ Top</button>
       </div>
     </div>
@@ -1260,16 +1261,46 @@ a { color: inherit; text-decoration: none; }
 
   // ── NEWSLETTER FORM ───────────────────────
   const form = document.querySelector('.newsletter-form');
-  form?.addEventListener('submit', e => {
+  form?.addEventListener('submit', async e => {
     e.preventDefault();
     const input = form.querySelector('input[type="email"]');
     const btn   = form.querySelector('.btn');
-    if (!input.value) return;
+    const email = input.value.trim();
+    if (!email) return;
 
-    btn.textContent = 'Subscribed ✓';
-    btn.style.background = 'var(--sage)';
+    btn.textContent = 'Subscribing...';
     btn.disabled = true;
-    input.value = '';
+
+    try {
+      const SUPABASE_URL = 'https://oyexbfacsrhnewhabach.supabase.co';
+      const SUPABASE_KEY = 'sb_publishable_VpITpX1HIsA5SRUzw1wwKg_HLoMoZdM';
+      const res = await fetch(SUPABASE_URL + '/rest/v1/subscribers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email: email })
+      });
+
+      if (res.ok) {
+        btn.textContent = 'Subscribed ✓';
+        btn.style.background = 'var(--sage)';
+        input.value = '';
+      } else if (res.status === 409) {
+        btn.textContent = 'Already subscribed';
+        btn.style.background = 'var(--sage)';
+      } else {
+        btn.textContent = 'Try again';
+        btn.style.background = '#c0392b';
+      }
+    } catch (err) {
+      btn.textContent = 'Try again';
+      btn.style.background = '#c0392b';
+    }
+
     setTimeout(() => {
       btn.textContent = 'Subscribe';
       btn.style.background = '';

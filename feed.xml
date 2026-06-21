@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>WildFrame Journal</title>
+    <link>https://franco254.github.io/wildframe/blog/</link>
+    <description>Field notes and stories from the wild — landscape, wildlife, and macro photography.</description>
+    <language>en-us</language>
+    <atom:link href="https://franco254.github.io/wildframe/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tracking Wolves in Bialowieza</title>
+      <link>https://franco254.github.io/wildframe/post/?id=wolves</link>
+      <guid isPermaLink="true">https://franco254.github.io/wildframe/post/?id=wolves</guid>
+      <description>Three days inside Europe's last primeval forest, waiting for a shadow that moves between the trees only at dusk.</description>
+      <category>Wildlife</category>
+    </item>
+    <item>
+      <title>The Dolomites at First Light</title>
+      <link>https://franco254.github.io/wildframe/post/?id=dolomites</link>
+      <guid isPermaLink="true">https://franco254.github.io/wildframe/post/?id=dolomites</guid>
+      <description>Why I drive four hours in the dark to be alone with the mountains before anyone else arrives.</description>
+      <category>Landscape</category>
+    </item>
+    <item>
+      <title>A World One Centimetre Wide</title>
+      <link>https://franco254.github.io/wildframe/post/?id=macro-world</link>
+      <guid isPermaLink="true">https://franco254.github.io/wildframe/post/?id=macro-world</guid>
+      <description>The surprising universe that exists in a single hedgerow on an October morning.</description>
+      <category>Macro</category>
+    </item>
+    <item>
+      <title>What I Actually Use in the Field</title>
+      <link>https://franco254.github.io/wildframe/post/?id=gear</link>
+      <guid isPermaLink="true">https://franco254.github.io/wildframe/post/?id=gear</guid>
+      <description>After years of testing, this is the kit that earns its weight.</description>
+      <category>Gear</category>
+    </item>
+  </channel>
+</rss>

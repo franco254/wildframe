@@ -187,6 +187,7 @@
       <div class="admin-nav">
         <button id="navList" class="active">Posts</button>
         <button id="navNew">New Post</button>
+        <button id="navFeed">RSS Feed</button>
       </div>
     </header>
 
@@ -359,6 +360,66 @@
       listView.style.display = 'none'; editorView.style.display = 'block';
       resetForm(post);
     }
+
+    // ── RSS FEED GENERATION ────────────────────
+    document.getElementById('navFeed').addEventListener('click', async () => {
+      const btn = document.getElementById('navFeed');
+      btn.textContent = 'Generating...';
+
+      const { data: posts, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+
+      if (error || !posts) {
+        alert('Could not load posts to generate feed.');
+        btn.textContent = 'RSS Feed';
+        return;
+      }
+
+      const escapeXml = (str) => (str || '').toString()
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
+      const siteUrl = 'https://franco254.github.io/wildframe';
+      const now = new Date().toUTCString();
+
+      let items = posts.map(post => {
+        const postUrl = siteUrl + '/post/?id=' + post.id;
+        const pubDate = post.created_at ? new Date(post.created_at).toUTCString() : now;
+        return `    <item>
+      <title>${escapeXml(post.title)}</title>
+      <link>${postUrl}</link>
+      <guid isPermaLink="true">${postUrl}</guid>
+      <description>${escapeXml(post.excerpt)}</description>
+      <pubDate>${pubDate}</pubDate>
+      <category>${escapeXml(post.category)}</category>
+    </item>`;
+      }).join('\n');
+
+      const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>WildFrame Journal</title>
+    <link>${siteUrl}/blog/</link>
+    <description>Field notes and stories from the wild — landscape, wildlife, and macro photography.</description>
+    <language>en-us</language>
+    <lastBuildDate>${now}</lastBuildDate>
+    <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml" />
+${items}
+  </channel>
+</rss>`;
+
+      const blob = new Blob([rss], { type: 'application/rss+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'feed.xml';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      btn.textContent = 'Downloaded ✓';
+      setTimeout(() => { btn.textContent = 'RSS Feed'; }, 2000);
+    });
 
     // ── LOAD POST LIST ────────────────────────
     async function loadPosts() {
